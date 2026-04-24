@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from groq import Groq
-ai_model = Groq(api_key=st.secrets["groq_api"])
+    ai_model = Groq(api_key=st.secrets["groq_api"])
 
 
 st.title("FashionBot 👗")
@@ -65,37 +65,28 @@ def get_chatgpt_response(messages):
     )
     return  response.choices[0].message.content
 
-def update_chat(messages, role, content):
-    messages.append({"role": role, "content": content})
-    return messages
+if "messages" not in st.session_state:
+    st.session_state.messages = get_initial_message()
 
-if 'generated' not in st.session_state:
-    st.session_state['generated'] = []
-    
-if 'past' not in st.session_state:
-    st.session_state['past'] = []
+# -----------------------------
+# DISPLAY CHAT
+# -----------------------------
+for msg in st.session_state.messages:
+    if msg["role"] == "user":
+        st.chat_message("user").write(msg["content"])
+    elif msg["role"] == "assistant":
+        st.chat_message("assistant").write(msg["content"])
 
-if 'messages' not in st.session_state:
-    st.session_state['messages'] = get_initial_message()    
-        
-prompt = st.text_input("how may i help you: ", key="input")                
+# -----------------------------
+# INPUT
+# -----------------------------
+prompt = st.chat_input("👋 How may I assist you today?")
 
 if prompt:
-    with st.spinner("generating..."):
-        messages = st.session_state['messages']
-        messages = update_chat(messages, "user", prompt)
-        response = get_chatgpt_response(messages)
-        messages = update_chat(messages, "assistant", response)
-        st.session_state.past.append(prompt)
-        st.session_state.generated.append(response)
+    st.chat_message("user").write(prompt)
+    st.session_state.messages.append({"role": "user", "content": prompt})
 
-        
-if st.session_state['generated']:
+    response = get_response(st.session_state.messages)
 
-    for i in range(len(st.session_state['generated'])):
-
-        with st.chat_message("user"):
-            st.write(st.session_state['past'][i])
-
-        with st.chat_message("assistant"):
-            st.write(st.session_state["generated"][i])
+    st.chat_message("assistant").write(response)
+    st.session_state.messages.append({"role": "assistant", "content": response})
