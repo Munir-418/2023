@@ -54,7 +54,7 @@ def get_initial_message():
             Finally, you collect delivery details if needed and confirm the payment. \
             Always keep the conversation simple, friendly, and helpful.\
             """},
-    {"role": "user", "content": "assalam o alaikum"},
+   
     {"role": "assistant", "content": "Walaikum Salam, How are you"}
     ]
     return messages
