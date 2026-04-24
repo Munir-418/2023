@@ -1,8 +1,8 @@
 import streamlit as st
-import os
 from groq import Groq
-    ai_model = Groq(api_key=st.secrets["groq_api"])
 
+# Fix indentation
+ai_model = Groq(api_key=st.secrets["groq_api"])
 
 st.title("FashionBot 👗")
 
@@ -58,35 +58,43 @@ def get_initial_message():
     {"role": "assistant", "content": "Walaikum Salam, How are you"}
     ]
     return messages
+
 def get_chatgpt_response(messages):
     response = ai_model.chat.completions.create(
-    model="llama-3.3-70b-versatile",
-    messages=messages
+        model="llama-3.3-70b-versatile",
+        messages=messages
     )
-    return  response.choices[0].message.content
+    return response.choices[0].message.content
 
+def update_chat(messages, role, content):
+    messages.append({"role": role, "content": content})
+    return messages
+
+# Session state setup
 if "messages" not in st.session_state:
     st.session_state.messages = get_initial_message()
 
-# -----------------------------
-# DISPLAY CHAT
-# -----------------------------
-for msg in st.session_state.messages:
-    if msg["role"] == "user":
-        st.chat_message("user").write(msg["content"])
-    elif msg["role"] == "assistant":
-        st.chat_message("assistant").write(msg["content"])
+# Display chat history
+for msg in st.session_state.messages[1:]:  # skip system message
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
-# -----------------------------
-# INPUT
-# -----------------------------
-prompt = st.chat_input("👋 How may I assist you today?")
+# ✅ Chat input (fixed at bottom)
+prompt = st.chat_input("How may I help you?")
 
 if prompt:
-    st.chat_message("user").write(prompt)
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Show user message
+    with st.chat_message("user"):
+        st.write(prompt)
 
-    response = get_response(st.session_state.messages)
+    # Update messages
+    st.session_state.messages = update_chat(st.session_state.messages, "user", prompt)
 
-    st.chat_message("assistant").write(response)
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    # Generate response
+    with st.chat_message("assistant"):
+        with st.spinner("Generating..."):
+            response = get_chatgpt_response(st.session_state.messages)
+            st.write(response)
+
+    # Save response
+    st.session_state.messages = update_chat(st.session_state.messages, "assistant", response)
