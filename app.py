@@ -1,9 +1,7 @@
 import streamlit as st
 import os
 from groq import Groq
-from dotenv import load_dotenv
-load_dotenv()
-ai_model=Groq(api_key=os.getenv("groq_api"))
+ai_model = Groq(api_key=st.secrets["groq_api"])
 
 
 st.title("FashionBot 👗")
