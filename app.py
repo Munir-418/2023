@@ -55,7 +55,7 @@ def get_initial_message():
             Always keep the conversation simple, friendly, and helpful.\
             """},
    
-    {"role": "assistant", "content": "Walaikum Salam, How are you"}
+    {"role": "assistant", "content": "How may i help you today?"}
     ]
     return messages
 
