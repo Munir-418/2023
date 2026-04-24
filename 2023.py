@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit_chat
 from streamlit_chat import message
 import os
 from groq import Groq
@@ -10,7 +9,7 @@ ai_model=Groq(api_key=os.getenv("groq_api"))
 global prompt
 st.title("FashionBot 👗")
 
-def get_initial_message():
+def get_initial_message():  
     messages=[  
             {"role": "system", "content":  """You are FashionBot, an automated service to help customers find and order clothing items. \
             You first greet the customer, then ask about their preferences, \
